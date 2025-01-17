@@ -16,9 +16,11 @@ Este projeto realiza a extração automática de informações de artistas e ál
 
 Para executar este projeto, foi utulizado:
 
-- Python (3.11.10)
-- Playwright para Python (1.49.1)
-
+- **Python** (3.11.10)
+- **Playwright** para Python (1.49.1)
+- **Pytest** (8.3.4)
+- **Unittest** (??????????????????????????) para mock nos testes
+p
 ### Instalação do Playwright
 
 Antes de rodar o script, instale as dependências necessárias:
@@ -75,3 +77,25 @@ Exemplo de uma linha JSONL:
   ]
 }
 ```
+
+## Testes
+
+Este projeto inclui testes unitários utilizando **pytest** para garantir o funcionamento correto das funções principais. Os testes utilizam **unittest.mock** para simular o comportamento do Playwright.
+
+### Como Executar os Testes
+
+Antes de rodar os testes, certifique-se de que todas as dependências estão instaladas.
+
+Para executá-los, utilize o seguinte comando:
+
+```sh
+pytest test_discogs_scraper.py
+```
+
+### Estrutura dos Testes
+
+Os testes cobrem as principais funções do projeto:
+
+- `test_get_artists_links`: Testa se a função get_artists_links retorna corretamente os links dos 10 primeiros artistas de um gênero.
+- `test_scrape_artist_info`: Testa se a função scrape_artist_info extrai corretamente as informações de um artista.
+- `test_scrape_album_info`: Testa se a função scrape_album_info coleta corretamente as informações de um álbum.
