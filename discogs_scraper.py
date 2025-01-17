@@ -68,10 +68,13 @@ def scrape_artist_info(url, genre):
 
             albums = []
             for i in range(min(10, page.locator(album_name_selector).count())):  # Pegando os 10 primeiros álbuns
-                album_name = page.locator(album_name_selector).nth(i).text_content().strip()
-                album_link = BASE_URL + page.locator(album_name_selector).nth(i).get_attribute("href")
-                album_year = page.locator(album_year_selector).nth(i).text_content().strip()
-                albums.append({"name": album_name, "link": album_link, "year": album_year})
+                try:
+                    album_name = page.locator(album_name_selector).nth(i).text_content().strip()
+                    album_link = BASE_URL + page.locator(album_name_selector).nth(i).get_attribute("href")
+                    album_year = page.locator(album_year_selector).nth(i).text_content().strip()
+                    albums.append({"name": album_name, "link": album_link, "year": album_year})
+                except Exception as e:
+                    print(f"Erro ao coletar informações do album: {e}")
 
             artist_info = {"id": artist_id, "genre": genre, "name": artist_name, "members": members, "sites": sites, "albums": albums}
 
