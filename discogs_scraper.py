@@ -1,10 +1,11 @@
 from playwright.sync_api import sync_playwright
 import json
 
+
 BASE_URL = "https://www.discogs.com"
 
-# Função para obter os 10 primeiros artistas automaticamente
-def get_artists(genre):
+# Função para obter os 10 primeiros links de artistas automaticamente
+def get_artists_links(genre):
     search_url = f"https://www.discogs.com/pt_BR/search/?sort=want%2Cdesc&q={genre}&type=artist&layout=sm"
     artists = []
 
@@ -15,7 +16,8 @@ def get_artists(genre):
 
         try:
             page.wait_for_selector("#search_results", timeout=60000)
-            for i in range(1, 11):  # Pegando os 10 primeiros artistas
+
+            for i in range(1, 11): # Pegando os 10 primeiros artistas
                 artist_selector = f"#search_results > li:nth-child({i}) > div.card_body > h4 > a"
                 artist_element = page.locator(artist_selector)
 
@@ -43,13 +45,16 @@ def scrape_artist_info(url, genre):
             # Captura o nome do artista
             page.wait_for_selector("h1.MuiTypography-root", timeout=60000)
             artist_name = page.locator("h1.MuiTypography-root").text_content().strip()
+
+            # Captura o id do artista
+            artist_id = page.locator("#artist-actions > header > button > span").text_content().replace("[a", "").replace("]", "")
             
             # Captura os membros da banda
             members_selector = "th:has-text('Membros') + td a.link_1ctor"
             members_elements = page.locator(members_selector)
             members = [member.text_content().strip() for member in members_elements.element_handles()]
             
-            # Captura os sites associados
+            # Captura os sites
             sites_selector = "th:has-text('Sites') + td a"
             sites_elements = page.locator(sites_selector)
             sites = [site.get_attribute("href") for site in sites_elements.element_handles()]
@@ -68,7 +73,7 @@ def scrape_artist_info(url, genre):
                 album_year = page.locator(album_year_selector).nth(i).text_content().strip()
                 albums.append({"name": album_name, "link": album_link, "year": album_year})
 
-            artist_info = {"genre": genre, "name": artist_name, "members": members, "sites": sites, "albums": albums}
+            artist_info = {"id": artist_id, "genre": genre, "name": artist_name, "members": members, "sites": sites, "albums": albums}
 
         except Exception as e:
             print(f"Erro ao coletar informações do artista: {e}")
@@ -125,11 +130,10 @@ def scrape_album_info(url):
                 track_number = page.locator(track_number_selector).nth(0).text_content().strip() if page.locator(track_number_selector).count() > 0 else "N/A"
                 track_name = page.locator(track_name_selector).nth(0).text_content().strip() if page.locator(track_name_selector).count() > 0 else "N/A"
 
-                # Ajuste para capturar corretamente o tempo da música
                 if page.locator(track_time_selector).count() > 0:
                     track_time = page.locator(track_time_selector).nth(0).text_content().strip()
                 else:
-                    track_time = "Desconhecido"
+                    track_time = None
 
                 tracks.append({
                     "number": track_number,
@@ -147,9 +151,8 @@ def scrape_album_info(url):
 
 
 if __name__ == "__main__":
-    # Fluxo principal para salvar JSONL corretamente
     genre = "rock"
-    artists = get_artists(genre)
+    artists = get_artists_links(genre)
     artists_data = []
 
     with open("discogsArtistsAlbums.jsonl", "w") as file:  # Arquivo JSONL
