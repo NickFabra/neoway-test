@@ -19,8 +19,7 @@ Para executar este projeto, foi utulizado:
 - **Python** (3.11.10)
 - **Playwright** para Python (1.49.1)
 - **Pytest** (8.3.4)
-- **Unittest** (??????????????????????????) para mock nos testes
-p
+
 ### Instalação do Playwright
 
 Antes de rodar o script, instale as dependências necessárias:
